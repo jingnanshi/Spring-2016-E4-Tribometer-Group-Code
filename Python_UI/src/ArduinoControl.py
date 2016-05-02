@@ -8,10 +8,6 @@ import signal
 posSignal = 'p' # a character to put on front of the signal so the arduino knows what to do with it
 rpmSignal = 'r'
 
-<<<<<<< Updated upstream
-def writeStringToArduino(stringIn, arduinoName):
-=======
-
 def readAndWriteSensorData(name):
     '''
     Given a name for the arduino (its usb string) read data from it until it sends a stop command, or times out
@@ -50,8 +46,7 @@ def readAndWriteSensorData(name):
     signal.alarm(0)
 
 
-def writeStringToArduino(stringIn):
->>>>>>> Stashed changes
+def writeStringToArduino(stringIn, arduinoName):
     '''
     Sends a string over serial to the arduino
     '''
@@ -60,16 +55,7 @@ def writeStringToArduino(stringIn):
         print "raising time exception"
         raise Exception("end of time")
     signal.signal(signal.SIGALRM, handler)
-<<<<<<< Updated upstream
     signal.alarm(10) 
-=======
-    signal.alarm(10)
-    ports = list(serial.tools.list_ports.comports())
-    name = ""
-    for p in ports:
-        if 'Arduino' in p[1]:
-            name = p[0]
->>>>>>> Stashed changes
     try:
         
         ser = serial.Serial(arduinoName, 9600)
