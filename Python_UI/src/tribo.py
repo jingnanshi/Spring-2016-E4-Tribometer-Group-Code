@@ -71,7 +71,7 @@ class App:
     def calibrate(self):
         """ calibrate the zero position of the pin
         """
-        pass
+        self.dist = 0
 
     def sendRPM(self):
         """ send RPM to Aruduino master
