@@ -8,7 +8,7 @@ import signal
 posSignal = 'p' # a character to put on front of the signal so the arduino knows what to do with it
 rpmSignal = 'r'
 
-def writeStringToArduino(stringIn):
+def writeStringToArduino(stringIn, arduinoName):
     '''
     Sends a string over serial to the arduino
     '''
@@ -17,16 +17,10 @@ def writeStringToArduino(stringIn):
         print "raising time exception"
         raise Exception("end of time")
     signal.signal(signal.SIGALRM, handler)
-    signal.alarm(10)
-    ports = list(serial.tools.list_ports.comports())
-    name = ""
-    for p in ports:
-        if 'Arduino' in p[1]:
-            name = p[0]
-    print name 
+    signal.alarm(10) 
     try:
         
-        ser = serial.Serial(name, 9600)
+        ser = serial.Serial(arduinoName, 9600)
         ser.write(stringIn)
 
         stringIn = ser.readline()
@@ -114,3 +108,12 @@ def serial_ports():
             pass
     return result
 
+def getArduinoPort():
+    """ get the port connecting to arduino
+    """
+    ports = list(serial.tools.list_ports.comports())
+    name = ""
+    for p in ports:
+        if 'Arduino' in p[1]:
+            name = p[0]
+    return name
