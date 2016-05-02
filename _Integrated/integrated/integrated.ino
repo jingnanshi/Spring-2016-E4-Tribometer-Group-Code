@@ -1,3 +1,7 @@
+// The integrated program for Arduino controller
+//
+// Created by Tribometer Group E4 Spring 2016, Section 3
+
 #include <Encoder.h>
 #include <PID_v1.h>
 #include <math.h>
@@ -154,10 +158,18 @@ void dealWithSerial()
          pos += value;
          stepper.moveTo(pos);
       } 
-      
+      // rpm command
       else if (input[0] == 'r')
       {
         rpm = updateRPM();
+      }
+      // revs command
+      else if (input[0] == 'e'){
+        
+      }
+      // start command
+      else if (input[0] == 's'){
+        
       }
     }
 }
