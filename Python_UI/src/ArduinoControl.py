@@ -8,7 +8,50 @@ import signal
 posSignal = 'p' # a character to put on front of the signal so the arduino knows what to do with it
 rpmSignal = 'r'
 
+<<<<<<< Updated upstream
 def writeStringToArduino(stringIn, arduinoName):
+=======
+
+def readAndWriteSensorData(name):
+    '''
+    Given a name for the arduino (its usb string) read data from it until it sends a stop command, or times out
+    '''
+    print 'writing'
+    dataFile = open('data2.txt', 'a') # open the file data.txt to write - 'a' for append, so won't overwrite old results
+    dataFile.write("Sensor Log starting at: ")
+    dataFile.write(str(datetime.datetime.now()))
+    ser = serial.Serial(name, 9600) # open communication with the arduino
+
+    # setup the timer
+        def handler(signum, frame):
+        print "raising time exception"
+        raise Exception("end of time")
+    signal.signal(signal.SIGALRM, handler)
+  
+    stringIn = ''
+    while (stringIn != 'STOP'): # have the arduino send this to stop the trial
+
+        signal.alarm(10) # setup the timer to wait 10 seconds before timing out
+        try:
+            stringIn = ser.readline()
+            floatsInString = [s for s in stringIn.split() if s[0].isdigit() or s[0] == '-'] # parse out the sensor value (kept as a string) from the serial prints
+            # if there was an int in the string, find the first one and that's your sensor value
+            if len(floatsInString) > 0:
+                print 'writing to file'
+                sensorValue = floatsInString[0]
+                dataFile.write(sensorValue + '\n') # write to the file after turning it to a string
+                dataFile.flush()
+            #print (ser.readline())
+        except Exception:
+            print 'arduino took too long to send data'
+            break  # if it errors, break out of this
+    print "closing file"
+    dataFile.close()
+    signal.alarm(0)
+
+
+def writeStringToArduino(stringIn):
+>>>>>>> Stashed changes
     '''
     Sends a string over serial to the arduino
     '''
@@ -17,7 +60,16 @@ def writeStringToArduino(stringIn, arduinoName):
         print "raising time exception"
         raise Exception("end of time")
     signal.signal(signal.SIGALRM, handler)
+<<<<<<< Updated upstream
     signal.alarm(10) 
+=======
+    signal.alarm(10)
+    ports = list(serial.tools.list_ports.comports())
+    name = ""
+    for p in ports:
+        if 'Arduino' in p[1]:
+            name = p[0]
+>>>>>>> Stashed changes
     try:
         
         ser = serial.Serial(arduinoName, 9600)
