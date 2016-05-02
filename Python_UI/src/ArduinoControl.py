@@ -38,7 +38,7 @@ def convertDistToArduino(amount):
     '''
     return amount * 500 # ARBITRARY FIGURE THIS OUT TO CALIBRATE 
 
-def changePos(amount):
+def changePos(amount,arduinoName):
     '''
     Send a signal to the arduino to change the position by a given amount
     format: posSignal followed by the amount as a string 
@@ -49,15 +49,15 @@ def changePos(amount):
     stringToSend = posSignal + formatNum(5, distToSend) # make sure to tag on the signal to let the arduino know what to do
     print "Sending:"
     print stringToSend
-    writeStringToArduino(stringToSend)
+    writeStringToArduino(stringToSend,arduinoName)
 
-def setRPM(rpm):
+def setRPM(rpm,arduinoName):
     '''
     Send a signal to the arduino to set the rpm - 
     format: rpmSignal followed by the number as a string
     '''
     stringToSend = rpmSignal + formatNum(5, rpm)
-    writeStringToArduino(stringToSend)
+    writeStringToArduino(stringToSend,arduinoName)
 
 def formatNum(endLength, amount):
     '''
@@ -77,8 +77,6 @@ def formatNum(endLength, amount):
             return '1' + '0' * numZeros + amountAsStr
         else:
             return '0' + '0' * numZeros + amountAsStr
-
-
 
 def serial_ports():
     """ Lists serial port names
