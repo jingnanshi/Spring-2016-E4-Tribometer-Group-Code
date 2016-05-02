@@ -43,7 +43,7 @@ class App:
         dist_go = Button(master, text="Go",
                          command=self.sendPOS,padx=3,pady=2,width=5)
         revs_go = Button(master, text="Go",
-                         command=self.sendPOS,padx=3,pady=2,width=5)
+                         command=self.sendREVS,padx=3,pady=2,width=5)
          
         # Calibrate button
         cali = Button(master,text="Calibrate zero",command=self.calibrate)
@@ -52,6 +52,8 @@ class App:
                               command=self.stepperToLeft)
         stepper_right = Button(master, text="Move to Right",
                                command=self.stepperToRight)
+        start = Button(master, text="Start",
+                               command=self.sendStart)
         # positioning the tk widgets
         self.title.grid(row = 0, column=1)
         e_rpm.grid(row=1, column=1)
@@ -90,7 +92,7 @@ class App:
                 tkMessageBox.showwarning("Invalid Value","Not in range:0-200")
                 return -1
             self.rpm = rpm
-            ArduinoControl.setRPM(rpm)
+            ArduinoControl.setRPM(rpm,self.arduinoPort)
             return 1
         except ValueError:
             tkMessageBox.showwarning("Invalid Value","Not an Integer")
@@ -106,7 +108,7 @@ class App:
                 return -1
             change = dist - self.dist
             self.dist = dist
-            ArduinoControl.changePos(change) # move by the difference in intended distance and current distance
+            ArduinoControl.changePos(change,self.arduinoPort) # move by the difference in intended distance and current distance
             return 1
         except ValueError:
             tkMessageBox.showwarning("Invalid Value","Not an Integer")
@@ -117,20 +119,24 @@ class App:
         """
         pass
 
-
+    def sendStart(self):
+        """ send start signal
+        """
+        pass
+    
 
     def stepperToLeft(self):
         """ stepper to the left
         """
         self.dist += self.moveAmount
-        ArduinoControl.changePos(self.moveAmount)
+        ArduinoControl.changePos(self.moveAmount,self.arduinoPort)
         pass
 
     def stepperToRight(self):
         """ stepper to the right
         """
         self.dist -= self.moveAmount
-        ArduinoControl.changePos(-1 * self.moveAmount)
+        ArduinoControl.changePos(-1 * self.moveAmount,self.arduinoPort)
         pass
 
     def showAbout(self):

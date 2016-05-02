@@ -19,7 +19,7 @@ def readAndWriteSensorData(name):
     ser = serial.Serial(name, 9600) # open communication with the arduino
 
     # setup the timer
-        def handler(signum, frame):
+    def handler(signum, frame):
         print "raising time exception"
         raise Exception("end of time")
     signal.signal(signal.SIGALRM, handler)
@@ -44,7 +44,6 @@ def readAndWriteSensorData(name):
     print "closing file"
     dataFile.close()
     signal.alarm(0)
-
 
 def writeStringToArduino(stringIn, arduinoName):
     '''
