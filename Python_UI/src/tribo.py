@@ -122,6 +122,7 @@ class App:
     def sendStart(self):
         """ send start signal
         """
+        ArduinoControl.sendStart(self.arduinoPort)
         pass
     
 

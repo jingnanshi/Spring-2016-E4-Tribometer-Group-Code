@@ -7,8 +7,10 @@ import signal
 
 posSignal = 'p' # a character to put on front of the signal so the arduino knows what to do with it
 rpmSignal = 'r'
+startSignal = 's00000'
+revolutionSignal = 'e'
 
-def readAndWriteSensorData(name):
+def readAndWriteSensorData(arduinoName):
     '''
     Given a name for the arduino (its usb string) read data from it until it sends a stop command, or times out
     '''
@@ -16,7 +18,7 @@ def readAndWriteSensorData(name):
     dataFile = open('data2.txt', 'a') # open the file data.txt to write - 'a' for append, so won't overwrite old results
     dataFile.write("Sensor Log starting at: ")
     dataFile.write(str(datetime.datetime.now()))
-    ser = serial.Serial(name, 9600) # open communication with the arduino
+    ser = serial.Serial(arduinoName, 9600) # open communication with the arduino
 
     # setup the timer
     def handler(signum, frame):
@@ -57,6 +59,7 @@ def writeStringToArduino(stringIn, arduinoName):
     signal.alarm(10) 
     try:
         
+        print (arduinoName)
         ser = serial.Serial(arduinoName, 9600)
         ser.write(stringIn)
 
@@ -69,11 +72,19 @@ def writeStringToArduino(stringIn, arduinoName):
     # end that timer
     signal.alarm(0)
 
+def sendStart(arduinoName):
+    stringToSend = startSignal
+    writeStringToArduino(stringToSend, arduinoName)
+
+def sendStart(arduinoName):
+    stringToSend = startSignal
+    writeStringToArduino(stringToSend, arduinoName)
+
 def convertDistToArduino(amount):
     '''
     Change to the units used in the arduino positioning
     '''
-    return amount * 500 # ARBITRARY FIGURE THIS OUT TO CALIBRATE 
+    return amount * 200 # ARBITRARY FIGURE THIS OUT TO CALIBRATE 
 
 def changePos(amount,arduinoName):
     '''
