@@ -7,6 +7,7 @@
 #include <math.h>
 #include "HX711.h"
 #include "arduino2.h" 
+#include <AccelStepper.h>
 #include <string.h>
 
 #define MOTORREVCOUNTS 64
@@ -17,9 +18,7 @@
 #define BRK_1 9
 
 // Define a stepper and the pins it will use
-#define STEP 11
-#define DIR_STEP 10
-
+AccelStepper stepper(2, 11, 10);//11:step 10: dir 
 long pos = 0;
 int revs = 400; // 400 for one revolution
 boolean inExp = false;
@@ -52,28 +51,27 @@ HX711 scale(DOUT, CLK,69,68);
 #define calibration_factor -7050.0 //This value is obtained using the SparkFun_HX711_Calibration sketch
 
 void setup() {
-
+  cli();
+  stepper.setMaxSpeed(1000);
+  stepper.setAcceleration(1000);
+  stepper.setSpeed(500);
+  sei();
+  
   Serial.begin(9600);
   pinMode2(DIR_1, OUTPUT); 
   pinMode2(PWM_1, OUTPUT); 
   pinMode2(BRK_1, OUTPUT); 
-  
-  pinMode2(STEP, OUTPUT);     
-  pinMode2(DIR_STEP, OUTPUT);
-  digitalWrite2(STEP, LOW);
-  // direction: low to left; high to right
-  digitalWrite2(DIR_STEP, LOW);
-  
+
   scale.set_scale(calibration_factor); 
   scale.tare();
-  
+
   // pid setup
   Set_rpm = 10;
   rpm_PID.SetMode(AUTOMATIC);
 
   // motor setup
   digitalWrite2(DIR_1, LOW); //forward direction
-  
+ 
   myEnc.write(0);
 
   cli();
@@ -93,7 +91,7 @@ void setup() {
 
   sei();
 }
-
+//
 ISR(TIMER0_COMPA_vect){//timer0 interrupt 2kHz toggles pin 8
   if (state == 1){
     ct1 = myEnc.read();
@@ -107,9 +105,10 @@ ISR(TIMER0_COMPA_vect){//timer0 interrupt 2kHz toggles pin 8
 }
 
 void loop() {
-
-
-//  Serial.print(revs);
+  pos = 7200;
+  stepper.moveTo(pos);
+  stepper.run();
+  Serial.print(revs);
   dealWithSerial();
   while (myEnc.read() <= revs && inExp){
     disk_input = (double)rpm;
@@ -129,7 +128,6 @@ void loop() {
   if (inExp == true){
     inExp = false;
     myEnc.write(0);
-    Serial.println("STOP");
   }
 //  Serial.print(revs);
 //  Serial.println(myEnc.read());
@@ -162,9 +160,9 @@ void dealWithSerial()
       if (input[0] == 'p')    // if it is a command to change position
       {
         // INPUT FORMAT: p10123 |||first bit is sign! This represents a position command to move -123
-        char posStr[5];   // create a string to hold the change in position
+        char posStr[6];   // create a string to hold the change in position
         memset(posStr, '\0', sizeof(posStr));
-        strncpy(posStr, input + 2, 4);   // copy over the values from input
+        strncpy(posStr, input + 1, 5);   // copy over the values from input
         char sign = input[1];
 
         int value = atoi(posStr);   // the absolute value
@@ -172,9 +170,9 @@ void dealWithSerial()
         {
           value = value * -1;
         }
-        // microsteps = 8 * steps
-        // value in steps
-        goMicroSteps(value*8);
+
+         pos += value;
+         stepper.moveTo(pos);
       } 
       // rpm command
       else if (input[0] == 'r')
@@ -213,24 +211,8 @@ int updateREVS(){
   // get the substring starting from index 2
   memset(revsStr, '\0', sizeof(revsStr));
   strncpy(revsStr,input+1,5);
-  revs = atoi(revsStr)*500;
+  revs = atoi(revsStr)*400;
   return revs;
-}
-
-int goMicroSteps(long steps){
-  
-  if (steps < 0){
-    digitalWrite2(DIR_STEP, LOW);
-  } else {
-    digitalWrite2(DIR_STEP, HIGH);
-  }
-  
-  for (long i = 0; i < abs(steps); i ++){
-    digitalWrite2(STEP, HIGH);
-    delay(1);          
-    digitalWrite2(STEP, LOW); 
-    delay(1);     
-  }
 }
   
 
