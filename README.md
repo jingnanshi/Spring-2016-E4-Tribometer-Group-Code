@@ -3,4 +3,4 @@ This holds the Arduino code and Python GUI program for controlling the Pin-on-di
 
 # Description
 
-Python_UI folder includes the code for the Python GUI. Integrated include the embeded code for the Arduino.
+Python_UI folder includes the code for the Python GUI. Integrated folder includes the embeded code for the Arduino.
