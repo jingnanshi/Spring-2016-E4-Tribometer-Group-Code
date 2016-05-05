@@ -1,0 +1,1 @@
+This folder contains the required dependencies for uploading the code to Arduino.

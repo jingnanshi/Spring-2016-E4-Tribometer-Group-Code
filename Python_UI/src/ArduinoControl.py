@@ -55,22 +55,28 @@ def writeStringToArduino(stringIn, arduinoName):
     def handler(signum, frame):
         print "raising time exception"
         raise Exception("end of time")
-    signal.signal(signal.SIGALRM, handler)
-    signal.alarm(10) 
-    try:
+    #signal.signal(signal.SIGALRM, handler)
+    #signal.alarm(10) 
+    #try:
         
-        print (arduinoName)
-        ser = serial.Serial(arduinoName, 9600)
-        ser.write(stringIn)
+    #    print (arduinoName)
+    #    ser = serial.Serial(arduinoName, 9600)
+    #    ser.write(stringIn)
 
-        stringIn = ser.readline()
-        print("Response: ")
-        print stringIn
-    except Exception:
-        print 'arduino took too long to respond, threw exception'
+    #    stringIn = ser.readline()
+    #    print("Response: ")
+    #    print stringIn
+    #except Exception:
+    #    print 'arduino took too long to respond, threw exception'
 
     # end that timer
-    signal.alarm(0)
+    #signal.alarm(0)
+    ser = serial.Serial(arduinoName, 9600,timeout=5)
+    time.sleep(2)
+    ser.write(stringIn)
+    stringIn = ser.readline()
+    print("Response: ")
+    print stringIn
 
 def sendStart(arduinoName):
     stringToSend = startSignal

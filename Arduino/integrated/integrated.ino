@@ -5,7 +5,7 @@
 #include <Encoder.h>
 #include <PID_v1.h>
 #include <math.h>
-#include "HX711.h"
+#include "HX711F.h"
 #include "arduino2.h" 
 #include <string.h>
 
@@ -47,7 +47,7 @@ PID rpm_PID(&disk_input, &disk_output, &Set_rpm, Kp, Ki, Kd, DIRECT);
 const GPIO_pin_t DOUT = DP69;
 const GPIO_pin_t CLK = DP68;
 
-HX711 scale(DOUT, CLK,69,68);
+HX711F scale(DOUT, CLK,69,68);
 
 #define calibration_factor -7050.0 //This value is obtained using the SparkFun_HX711_Calibration sketch
 
@@ -123,7 +123,7 @@ void loop() {
     cli();
     Serial.println(scale.get_units()*0.3234);
     sei();
-    Serial.println(myEnc.read());
+    myEnc.read();
     analogWrite(PWM_1,disk_output);
   }
   if (inExp == true){
@@ -213,7 +213,7 @@ int updateREVS(){
   // get the substring starting from index 2
   memset(revsStr, '\0', sizeof(revsStr));
   strncpy(revsStr,input+1,5);
-  revs = atoi(revsStr)*500;
+  revs = (float) atoi(revsStr)*500 / 8;
   return revs;
 }
 
